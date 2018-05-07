@@ -2,8 +2,7 @@
 #
 # @author: dan.sorak
 #
-# This Stage 1 script will copy all components of the DPS application to the DPS devop (dev) host in
-# the cloud and then from there, deploy to the service hosts within the cloud using the stage2 script.
+# This script create the base image, and then build the 5.1.8 and 6.0.0 images based on it
 #
 
 THIS_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
