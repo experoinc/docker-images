@@ -7,7 +7,7 @@ FROM dse-base
 MAINTAINER "DataStax, Inc <info@datastax.com>"
 
 ARG VERSION=6.0.0
-ARG URL_PREFIX=http://localhost
+ARG URL_PREFIX=https://downloads.datastax.com/enterprise
 ARG DSE_TARBALL=dse-${VERSION}-bin.tar.gz
 ARG DSE_DOWNLOAD_URL=${URL_PREFIX}/${DSE_TARBALL}
 
@@ -18,8 +18,8 @@ ARG DSE_AGENT_DOWNLOAD_URL=${URL_PREFIX}/${DSE_AGENT_TARBALL}
 ENV DSE_HOME /opt/dse
 ENV DSE_AGENT_HOME /opt/agent
 
-RUN set -x \
 # Add DSE user
+RUN set -x \
     && groupadd -r dse --gid=999 \
     && useradd -m -d "$DSE_HOME" -r -g dse --uid=999 dse
 
@@ -27,31 +27,31 @@ RUN set -x \
 RUN set -x \
     && export DEBIAN_FRONTEND=noninteractive \
     && apt-get update -qq \
-    && apt-get install -y python adduser lsb-base procps gzip zlib1g wget debianutils libaio1 \
-    && apt-get remove -y python3 \
+    && apt-get install --yes python adduser lsb-base procps gzip zlib1g wget debianutils libaio1 \
+    && apt-get remove --yes python3 \
     && apt-get autoremove --yes \
     && apt-get clean all \
     && rm -rf /var/lib/{apt,dpkg,cache,log}/
 
 COPY files /
 
+ARG DATASTAX_USER
+ARG DATASTAX_PASSWORD
 RUN set -x \
 # Download DSE tarball if needed
-    && if test ! -e /${DSE_TARBALL}; then wget -q -O /${DSE_TARBALL} ${DSE_DOWNLOAD_URL} ; fi \
+    && if test ! -e /${DSE_TARBALL}; then wget -q -O /${DSE_TARBALL} --http-user="$DATASTAX_USER" --http-password="$DATASTAX_PASSWORD" ${DSE_DOWNLOAD_URL} ; fi \
 # Unpack tarball
     && tar -C "$DSE_HOME" --strip-components=1 -xzf /${DSE_TARBALL} \
     && rm /${DSE_TARBALL} \
     && chown -R dse:dse ${DSE_HOME} \
 # Download Agent tarball if needed
-    && if test ! -e /${DSE_AGENT_TARBALL}; then wget -q -O /${DSE_AGENT_TARBALL} ${DSE_AGENT_DOWNLOAD_URL} ; fi \
+    && if test ! -e /${DSE_AGENT_TARBALL}; then wget -q -O /${DSE_AGENT_TARBALL} --http-user="$DATASTAX_USER" --http-password="$DATASTAX_PASSWORD" ${DSE_AGENT_DOWNLOAD_URL} ; fi \
     && mkdir -p "$DSE_AGENT_HOME" \
     && tar -C "$DSE_AGENT_HOME" --strip-components=1 -xzf /${DSE_AGENT_TARBALL} \
     && rm /${DSE_AGENT_TARBALL} \
     && chown -R dse:dse ${DSE_AGENT_HOME} \
 # Create folders
-    && (for dir in /var/lib/cassandra /var/lib/spark /var/lib/dsefs /var/log/cassandra /var/log/spark /config ; do \
-        mkdir -p $dir && chown -R dse:dse $dir && chmod 777 $dir ; \
-    done )
+    && (for dir in /var/lib/cassandra /var/lib/spark /var/lib/dsefs /var/log/cassandra /var/log/spark /config ; do mkdir -p $dir && chown -R dse:dse $dir && chmod 777 $dir ; done)
 
 ENV PATH $DSE_HOME/bin:$PATH
 ENV HOME $DSE_HOME
@@ -63,7 +63,7 @@ USER dse
 VOLUME ["/var/lib/cassandra", "/var/lib/spark", "/var/lib/dsefs", "/var/log/cassandra", "/var/log/spark", "/opt/dse/resources"]
 
 # CASSANDRA PORTS (INTRA-NODE, TLS INTRA-NODE, JMX, CQL, THRIFT, DSEFS INTRA-NODE, INTRA-NODE MESSAGING SERVICE)
-EXPOSE 7000 7001 7199 8609 9042 9160
+EXPOSE 7000 7001 7199 8609 9042 9142 9160
 
 # DSE SEARCH (SOLR)
 EXPOSE 8983 8984
