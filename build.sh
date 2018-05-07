@@ -2,7 +2,7 @@
 #
 # @author: dan.sorak
 #
-# This script create the base image, and then build the 5.1.8 and 6.0.0 images based on it
+# This script creates the base image, and then builds the 5.1.8 and 6.0.0 images based on it
 #
 
 THIS_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
