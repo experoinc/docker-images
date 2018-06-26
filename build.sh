@@ -13,4 +13,4 @@ set -x
 
 (cd base && docker build -t dse-base:latest .)
 (cd server/5.1 && docker build -t dse-server:5.1.8 .)
-(cd server/6.0 && docker build -t dse-server:6.0.0 .)
+#(cd server/6.0 && docker build -t dse-server:6.0.0 .)
