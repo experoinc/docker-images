@@ -27,7 +27,7 @@ RUN set -x \
 RUN set -x \
     && export DEBIAN_FRONTEND=noninteractive \
     && apt-get update -qq \
-    && apt-get install --yes python adduser lsb-base procps gzip zlib1g wget debianutils libaio1 \
+    && apt-get install --yes python adduser lsb-base procps gzip zlib1g wget debianutils \
     && apt-get remove --yes python3 \
     && apt-get autoremove --yes \
     && apt-get clean all \
